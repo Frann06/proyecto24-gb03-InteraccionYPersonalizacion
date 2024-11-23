@@ -1,0 +1,584 @@
+openapi: 3.0.3
+info:
+  title: API de Interacción y Personalización
+  description: API para gestionar la interacción y personalización de usuarios en
+    la arquitectura de microservicios.
+  version: 1.0.0
+servers:
+- url: https://api.tu-dominio.com/v1
+  description: Servidor principal
+tags:
+- name: Historial
+  description: Operaciones relacionadas con el historial de visualizaciones
+- name: Ratings
+  description: Operaciones relacionadas con los ratings de contenidos
+- name: Favoritos
+  description: Operaciones relacionadas con los favoritos de los usuarios
+- name: Recomendaciones
+  description: Operaciones para generar recomendaciones de contenido
+paths:
+  /historial:
+    get:
+      tags:
+      - Historial
+      summary: Obtener historial de visualizaciones
+      description: Recupera todas las entradas de historial creadas.
+      operationId: historial_get
+      responses:
+        "200":
+          description: Lista de historial de visualizaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Visualizacion'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+    post:
+      tags:
+      - Historial
+      summary: Agregar entrada al historial
+      description: Añade una nueva entrada de una visualización al historial de visualizaciones.
+      operationId: historial_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Visualizacion'
+        required: true
+      responses:
+        "201":
+          description: Visualización creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visualizacion'
+        "400":
+          description: Datos inválidos
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+  /historial/{id_visualizacion}:
+    get:
+      tags:
+      - Historial
+      summary: Obtener una entrada específica del historial
+      description: Recupera una entrada específica del historial por su ID.
+      operationId: historial_id_visualizacion_get
+      parameters:
+      - name: id_visualizacion
+        in: path
+        description: ID único de la visualizacion
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Detalle de la entrada del historial
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visualizacion'
+        "404":
+          description: Historial no encontrado
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+    put:
+      tags:
+      - Historial
+      summary: Actualizar una visualizacion del historial
+      description: Actualiza la información de una visualizacion específica del historial.
+      operationId: historial_id_visualizacion_put
+      parameters:
+      - name: id_visualizacion
+        in: path
+        description: ID único de la visualizacion
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Visualizacion'
+        required: true
+      responses:
+        "200":
+          description: Historial actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Visualizacion'
+        "400":
+          description: Datos inválidos
+        "404":
+          description: Historial no encontrado
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+    delete:
+      tags:
+      - Historial
+      summary: Eliminar una entrada del historial
+      description: Elimina una visualización específica del historial por su ID.
+      operationId: historial_id_visualizacion_delete
+      parameters:
+      - name: id_visualizacion
+        in: path
+        description: ID único de la visualizacion
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Historial eliminado exitosamente
+        "404":
+          description: Historial no encontrado
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+  /historial/perfil/{id_perfil}:
+    get:
+      tags:
+      - Historial
+      summary: Obtener todas las entradas del historial de un perfil
+      description: Recupera todas las entradas de visualizaciones asociadas a un perfil
+        específico.
+      operationId: historial_perfil_id_perfil_get
+      parameters:
+      - name: id_perfil
+        in: path
+        description: ID del perfil del usuario
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Lista de historial de visualizaciones para el perfil especificado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Visualizacion'
+                x-content-type: application/json
+        "400":
+          description: Parámetros inválidos
+        "404":
+          description: No se encontraron historiales para el perfil especificado
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+    delete:
+      tags:
+      - Historial
+      summary: Eliminar todo el historial de un perfil
+      description: Elimina todas las entradas de historial asociadas a un perfil específico.
+      operationId: historial_perfil_id_perfil_delete
+      parameters:
+      - name: id_perfil
+        in: path
+        description: ID del perfil del usuario
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Historial eliminado exitosamente
+        "400":
+          description: Parámetros inválidos
+        "404":
+          description: Perfil no encontrado o historial no existente
+      x-openapi-router-controller: swagger_server.controllers.historial_controller
+  /ratings:
+    post:
+      tags:
+      - Ratings
+      summary: Crear un rating
+      description: Crea un nuevo rating para un contenido por un perfil.
+      operationId: ratings_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      responses:
+        "201":
+          description: Rating creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        "400":
+          description: Datos inválidos
+      x-openapi-router-controller: swagger_server.controllers.ratings_controller
+  /ratings/content/{id_contenido}:
+    get:
+      tags:
+      - Ratings
+      summary: Obtener ratings por contenido
+      description: Recupera todos los ratings asociados a un contenido específico
+        mediante su ID.
+      operationId: ratings_content_id_contenido_get
+      parameters:
+      - name: id_contenido
+        in: path
+        description: ID del contenido para el cual se desean obtener los ratings
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Lista de ratings para el contenido especificado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rating'
+                x-content-type: application/json
+        "400":
+          description: Parámetros inválidos
+        "404":
+          description: No se encontraron ratings para el contenido especificado
+      x-openapi-router-controller: swagger_server.controllers.ratings_controller
+  /ratings/{id_rating}:
+    get:
+      tags:
+      - Ratings
+      summary: Obtener un rating específico
+      description: Recupera un rating por su ID.
+      operationId: ratings_id_rating_get
+      parameters:
+      - name: id_rating
+        in: path
+        description: ID del rating
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Detalle del rating
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        "404":
+          description: Rating no encontrado
+      x-openapi-router-controller: swagger_server.controllers.ratings_controller
+    put:
+      tags:
+      - Ratings
+      summary: Actualizar un rating
+      description: Actualiza un rating existente.
+      operationId: ratings_id_rating_put
+      parameters:
+      - name: id_rating
+        in: path
+        description: ID del rating
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+        required: true
+      responses:
+        "200":
+          description: Rating actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        "400":
+          description: Datos inválidos
+        "404":
+          description: Rating no encontrado
+      x-openapi-router-controller: swagger_server.controllers.ratings_controller
+    delete:
+      tags:
+      - Ratings
+      summary: Eliminar un rating
+      description: Elimina un rating por su ID.
+      operationId: ratings_id_rating_delete
+      parameters:
+      - name: id_rating
+        in: path
+        description: ID del rating
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Rating eliminado exitosamente
+        "404":
+          description: Rating no encontrado
+      x-openapi-router-controller: swagger_server.controllers.ratings_controller
+  /favoritos:
+    get:
+      tags:
+      - Favoritos
+      summary: Obtener favoritos
+      description: Recupera la lista de contenidos favoritos de un perfil.
+      operationId: favoritos_get
+      parameters:
+      - name: id_perfil
+        in: query
+        description: ID del perfil del usuario
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Lista de favoritos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorito'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.favoritos_controller
+    post:
+      tags:
+      - Favoritos
+      summary: Agregar a favoritos
+      description: Añade un contenido a la lista de favoritos de un perfil.
+      operationId: favoritos_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Favorito'
+        required: true
+      responses:
+        "201":
+          description: Favorito agregado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorito'
+        "400":
+          description: Datos inválidos
+      x-openapi-router-controller: swagger_server.controllers.favoritos_controller
+  /favoritos/{id_favorito}:
+    delete:
+      tags:
+      - Favoritos
+      summary: Eliminar un favorito
+      description: Elimina un contenido de la lista de favoritos por su ID.
+      operationId: favoritos_id_favorito_delete
+      parameters:
+      - name: id_favorito
+        in: path
+        description: ID del favorito
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Favorito eliminado exitosamente
+        "404":
+          description: Favorito no encontrado
+      x-openapi-router-controller: swagger_server.controllers.favoritos_controller
+  /recomendaciones:
+    get:
+      tags:
+      - Recomendaciones
+      summary: Obtener recomendaciones generales
+      description: Genera recomendaciones de contenido generales
+      operationId: recomendaciones_get
+      responses:
+        "200":
+          description: Lista de recomendaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.recomendaciones_controller
+  /recomendaciones/{id_usuario}:
+    get:
+      tags:
+      - Recomendaciones
+      summary: Obtener recomendaciones personalizadas
+      description: Obtiene recomendaciones personalizadas para un usuario concreto
+      operationId: recomendaciones_id_usuario_get
+      parameters:
+      - name: id_usuario
+        in: path
+        description: ID del usuario
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Lista de recomendaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contenido'
+                x-content-type: application/json
+        "400":
+          description: Parámetros inválidos
+      x-openapi-router-controller: swagger_server.controllers.recomendaciones_controller
+components:
+  schemas:
+    Visualizacion:
+      required:
+      - fecha_visualizacion
+      - id_contenido
+      - id_perfil
+      - progreso
+      type: object
+      properties:
+        id_visualizacion:
+          type: integer
+          description: ID único de la visualizacion
+        id_perfil:
+          type: integer
+          description: ID del perfil del usuario
+        id_contenido:
+          type: integer
+          description: ID del contenido visualizado
+        fecha_visualizacion:
+          type: string
+          description: Fecha y hora de la visualización
+          format: date-time
+        progreso:
+          type: number
+          description: Progreso de visualización en porcentaje
+          format: float
+      example:
+        id_visualizacion: 0
+        fecha_visualizacion: 2000-01-23T04:56:07.000+00:00
+        id_perfil: 6
+        id_contenido: 1
+        progreso: 5.962134
+    Rating:
+      required:
+      - id_contenido
+      - id_perfil
+      - thumb_up
+      type: object
+      properties:
+        id_rating:
+          type: integer
+          description: ID del rating
+        id_contenido:
+          type: integer
+          description: ID del contenido
+        id_perfil:
+          type: integer
+          description: ID del perfil del usuario
+        thumb_up:
+          type: boolean
+          description: Indica si el usuario dio una review positiva en caso de estar
+            a true o negativa en caso de estar a false.
+      example:
+        thumb_up: true
+        id_contenido: 6
+        id_perfil: 1
+        id_rating: 0
+    Favorito:
+      required:
+      - fecha_agregado
+      - id_contenido
+      - id_perfil
+      type: object
+      properties:
+        id_favorito:
+          type: integer
+          description: ID del favorito
+        id_perfil:
+          type: integer
+          description: ID del perfil del usuario
+        id_contenido:
+          type: integer
+          description: ID del contenido favorito
+        fecha_agregado:
+          type: string
+          description: Fecha en que se agregó a favoritos
+          format: date-time
+      example:
+        fecha_agregado: 2000-01-23T04:56:07.000+00:00
+        id_perfil: 6
+        id_contenido: 1
+        id_favorito: 0
+    Contenido:
+      required:
+      - duracion
+      - fecha_lanzamiento
+      - portada_url
+      - tipo
+      - titulo
+      type: object
+      properties:
+        id_contenido:
+          type: integer
+          description: ID único del contenido
+        titulo:
+          type: string
+          description: Título del contenido
+        descripcion:
+          type: string
+          description: Descripción del contenido
+        tipo:
+          type: string
+          description: Tipo de contenido (película o serie)
+          enum:
+          - pelicula
+          - serie
+        fecha_lanzamiento:
+          type: string
+          description: Fecha de lanzamiento del contenido
+          format: date
+        duracion:
+          type: integer
+          description: Duración en minutos
+        trailer_url:
+          type: string
+          description: URL del trailer del contenido
+          format: uri
+        portada_url:
+          type: string
+          description: URL de la portada del contenido
+          format: uri
+        stream_url:
+          type: string
+          description: URL del stream del contenido
+          format: uri
+      example:
+        descripcion: descripcion
+        portada_url: http://example.com/aeiou
+        tipo: pelicula
+        fecha_lanzamiento: 2000-01-23
+        titulo: titulo
+        duracion: 6
+        id_contenido: 0
+        stream_url: http://example.com/aeiou
+        trailer_url: http://example.com/aeiou
+
