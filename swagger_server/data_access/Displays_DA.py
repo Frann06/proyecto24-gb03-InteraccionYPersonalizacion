@@ -3,6 +3,7 @@ from swagger_server.models.visualizacion import Visualizacion as DisplayModel  #
 from sqlalchemy import desc  # Asegúrate de importar esto
 
 class Displays_DA:
+    # Clase para acceder a la tabla Display de la base de datos
     def __init__(self) -> None:
         pass
 
