@@ -15,7 +15,7 @@ class Recomendaciones_DA:
             print(f"Error al obtener todos los contenidos: {e}")
             return {"message": "Error al obtener todos los contenidos"}, 500
 
-    def recomendaciones_aleatorias(self, id_usuario, num_recomendaciones):
+    def recomendaciones_aleatorias(self, num_recomendaciones):
         try:
             # Obtener todos los contenidos de la base de datos
             contenidos_vistos, status_code = self.obtener_todos_los_contenidos()
