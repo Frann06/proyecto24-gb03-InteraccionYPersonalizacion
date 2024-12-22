@@ -1,7 +1,6 @@
-from sqlalchemy import *
-from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import class_mapper
+from sqlalchemy import Column, Integer, Boolean, DateTime, Float, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker, class_mapper
+
 
 # Crear una clase base para las tablas
 Base = declarative_base()
